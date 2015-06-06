@@ -38,8 +38,6 @@ Proposal:
       ValueType any_cast(const any& operand);
     template<class ValueType>
       ValueType any_cast(any& operand);
-    template<class ValueType>
-      ValueType any_cast(any&& operand);
 
   to:
 
@@ -47,9 +45,26 @@ Proposal:
       const ValueType& any_cast(const any& operand);
     template<class ValueType>
       ValueType& any_cast(any& operand);
-    template<class ValueType>
-      ValueType&& any_cast(any&& operand);
 
+  Leave rvalue version to return ValueType to avoid dangling reference
+  by binding the result to const ValueType&.
+    T const& x = any_cast<T>(function_returning_a_temporary_any());
+  https://svn.boost.org/trac/boost/ticket/9462
+
+  The reason to returning a copy instead of a reference in the above two
+  overloads were presumably to prevent dangling reference issue with
+  const& version in C++03.
+    T const& x = any_cast<T>(function_returning_a_temporary_any());
+  But now we have rvalue reference and be able to avoid them by rvalue
+  version which returns a copy. So there are no reason to return a copy
+  with these two overloads.
+
+  Old codes with boost::any works with this change, except some
+  hypothetical cases where making a modification on the copy leaving the
+  original purposely.
+    any_cast<T>(original).modify();
+  The behavior will be changed silently in these case. But I think the
+  possibility is very low enough to accept.
 
 Sidenotes:
 
