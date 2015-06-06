@@ -49,7 +49,6 @@ Proposal:
   Leave rvalue version to return ValueType to avoid dangling reference
   by binding the result to const ValueType&.
     T const& x = any_cast<T>(function_returning_a_temporary_any());
-  https://svn.boost.org/trac/boost/ticket/9462
 
   The reason to returning a copy instead of a reference in the above two
   overloads were presumably to prevent dangling reference issue with
@@ -72,3 +71,11 @@ Sidenotes:
     considered but turned down because any new interface to make a cast
     spoils grep-ability of any_cast, and misses obvious relation with
     bad_any_cast.
+
+References:
+
+  - N4529 [any.nonmembers] Should any_cast<ValueType>(any&) return a copy?
+    https://groups.google.com/a/isocpp.org/d/msg/std-proposals/ngSIHzM6kDQ/VVe4fCeDcooJ
+
+  - Boost ticket #9462: Fix ValueType&& any_cast(any&&)
+    https://svn.boost.org/trac/boost/ticket/9462
